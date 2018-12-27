@@ -1,0 +1,291 @@
+<!-- <h3>Business Ledger</h3> -->
+<div class="row" style="margin-top:10px">
+  <div class="col-xs-12">
+    <div class="pull-left">
+      <h2 style="margin:10px 0px">Business Ledger</h2>
+    </div>
+    <div class="pull-right">
+      <!-- <a class="btn btn-primary" role="button" (click)="getInvite()">Send Invites</a> -->
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <div [formGroup]="searchForm">
+      <div class="col-md-12" style="background-color: #f7f7f7;padding:10px 15px 5px 15px;border:1px solid gray">
+        <div>
+          <span style="margin-right:10px "></span>
+          <span class="form-inline" style="margin-right:10px ">
+            <mat-form-field>
+              <input matInput [matDatepicker]="dp1" placeholder="From" (click)="dp1.open()" formControlName="datePickerOne" [max]="maxDate"
+                readonly>
+              <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+              <mat-datepicker #dp1 disabled="false" (selectedChanged)="fromDate($event)"></mat-datepicker>
+            </mat-form-field>
+          </span>
+          <span class="form-inline" style="margin-right:10px">
+            <mat-form-field>
+              <input matInput [matDatepicker]="dp2" placeholder="To" (click)="dp2.open()" formControlName="datePickerTwo" [max]="maxDate"
+                readonly>
+              <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+              <mat-datepicker #dp2 disabled="false" (selectedChanged)="toDate($event)"></mat-datepicker>
+            </mat-form-field>
+          </span>
+          <span class="form-inline" style="margin-right:10px ">
+            <mat-form-field>
+              <input matInput placeholder="Search by name" (blur)="searchName($event)" formControlName="findname">
+            </mat-form-field>
+          </span>
+          <span style="margin-right:10px">
+            <button type="button" class="btn btn-default" style="background-color: #dddddd" (click)="callBusinessLedger('search','')">Search..
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+          </span>
+          <span style="margin-right:10px">
+            <mat-form-field>
+              <mat-select placeholder="File to download" formControlName="fileFormat">
+                <mat-option *ngFor="let file of _files" [value]="file.value">
+                  {{ file.viewValue }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </span>
+          <span>
+            <label>
+              <button type="button" class="btn btn-default" style="background-color: #dddddd" (click)="callBusinessLedger('search','yes')">
+                <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+              </button>
+            </label>
+          </span>
+          <span style="margin-right:10px">
+            <button type="button" class="btn btn-default" style="background-color: #dddddd" (click)="callBusinessLedger('new','')"> Reset </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive form-group">
+  <!-- <div class="table-responsive"> -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Transaction No</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Sender</th>
+        <th>Receiver</th>
+        <th>Amount</th>
+        <th>Transaction Hash</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="_transactionDetails.length==0">
+        <td col-span-7>No record found</td>
+      </tr>
+      <tr *ngFor="let record of _transactionDetails | paginate: { itemsPerPage:itemsPerPageAllowed, currentPage: p, totalItems:_totalElements }; let i=index">
+        <td>{{record.transactionSequenceNo}}</td>
+        <td>{{record.operation}}</td>
+        <td>{{record.transactionDate}}</td>
+        <td>{{record.sourceAccountName}}</td>
+        <td>{{record.destinationAccountName}}</td>
+        <td>{{record.tnxData | number:'1.7'}}</td>
+        <td *ngIf="record.tnxHash != null">{{record.tnxHash}}</td>
+        <td *ngIf="record.tnxHash == null">Failed</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="pull-right">
+      <pagination-controls (pageChange)="getBusinessLedgerDetails($event-1,'');p=$event" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+</div>
+
+
+<!--Reporting Modal -->
+<div id="userLedger" class="modal fade" role="dialog">
+  <div class="modal-dialog " style="overflow:auto;width:90%">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">User Ledger:
+          <span>{{AccountHolderName}}</span>
+          <span role="button" class="close" aria-hidden="true" (click)='closeViewReportModal()'>&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body" infinite-scroll [infiniteScrollDistance]="modalScrollDistance" [infiniteScrollThrottle]="modalScrollThrottle"
+        [scrollWindow]="false" (scrolled)="userViewReport()" style=" overflow-y: scroll;height:500px">
+
+        <div class="panel panel-default table-responsive" *ngIf="!_noAssetDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-3">
+                <h4 class="noMargin">Assets</h4>
+              </div>
+              <!-- <div class="col-md-9">
+                  <p class="noMargin text-right">
+                    Transaction hash
+                    <span class="glyphicon glyphicon-menu-right" style="top:2px"></span>
+                    <b>{{userAccountLedger.transaction_hash}}</b>
+                  </p>
+                </div> -->
+            </div>
+          </div>
+          <div class="panel-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <!-- <th>Code</th>
+                    <th>Limit</th> -->
+                  <th class="text-center">Code</th>
+                  <th class="text-center">Limit</th>
+                  <th class="text-center">Issuer</th>
+                  <th class="text-center">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let userAsset of _userAssets">
+                  <!-- <tr > -->
+                  <!-- <td>SGT</td>
+                    <td>12452125412255215225</td> -->
+                  <td class="text-center">{{userAsset.code}}</td>
+                  <td class="text-center">{{userAsset.limit}}</td>
+                  <td class="text-center">{{userAsset.issuer}}</td>
+                  <td class="text-center">{{userAsset.balance | number:'1.7'}}</td>
+                </tr>
+                <!-- <tr *ngIf="_noAssetDetails">
+                    <td colspan="4" class="text-center">No record found !</td>
+                  </tr> -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel panel-default" *ngIf="_noAssetDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="noMargin">Assets</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <h3 class="text-center">No record found !</h3>
+          </div>
+        </div>
+
+        <div class="panel panel-default" *ngIf="_noPayDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="noMargin">Payment</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <h3 class="text-center">No record found !</h3>
+          </div>
+        </div>
+
+        <div *ngIf="!_noPayDetails">
+          <div class="panel panel-default" *ngFor="let record of _userRecords ; let i = index">
+            <div class="panel-heading panelHead">
+              <div class="row">
+                <div class="col-md-3">
+                  <h4 class="noMargin" *ngIf="record.type == 'payment' || record.type == null ">Payment</h4>
+                  <h4 class="noMargin" *ngIf="record.type == 'change_trust'">Change Trust</h4>
+                </div>
+                <div class="col-md-9" style="overflow-wrap: break-word">
+                  <h5 class="noMargin text-right">Transaction hash
+                    <span class="glyphicon glyphicon-menu-right" style="top:2px"></span>
+                    <b>{{record.transactionHash}}</b>
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="panel-body table-responsive">
+              <table class="table ">
+                <thead>
+                  <tr>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">Trustee</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">Trustor</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null ">Sender</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null ">Receiver</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr role="button" (click)="als.keyRecord(i)">
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">{{record.trustee}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">{{record.trustor}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null">{{als.getValueFrom(record)}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null">{{als.getValueTo(record)}}</td>
+                  </tr>
+                  <tr id={{i}} style="display:none">
+                    <td style="width:50%" class="text-center">{{record.from}}</td>
+                    <td style="width:50%" class="text-center">{{record.to}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                <div class="col-md-6">
+                  <!-- <p class="noMargin">{{record.created_at }} -->
+                  <p class="noMargin">{{record.createdAt | newDatePipe }}
+                    <!-- <span>Time</span> -->
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="noMargin text-right" *ngIf="record.type == 'payment' || record.type == null">{{record.assetCode}} :
+                    <span>{{record.amount | number:'1.7' }}</span>
+                  </p>
+                  <p class="noMargin text-right" *ngIf="record.type == 'change_trust'">Limit :
+                    <span>{{record.limit | number:'1.7' }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!--Reporting modal-->
+
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+    </div>
+  </div>
+  <div *ngIf="loaderText">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3 class="">Token has been successfully created</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <a role="button" routerLink="/dashboard" class="btn btn-primary">OK</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loaderBackground" *ngIf="loaderForLedger && nextLedger == 0">
+  <div class="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+</div>
+
+<app-alert [message]="currentMessage"></app-alert>

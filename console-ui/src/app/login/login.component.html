@@ -1,0 +1,101 @@
+<div class="loginClass">
+  <!-- <div class="container loginMainBody"> -->
+    <div class="loginBody">
+      <form [formGroup]="loginForm">
+        <div class="row">
+          <div class="col-md-12 text-right">
+            <!-- <a href="javascript:void()" routerLink="/admin_login" style="text-decoration: underline;font-weight:700;font-size:12px">Admin Login</a> -->
+            <!-- Change by ABHI under jira id SCRU-92 -->
+            <!-- <a href="javascript:void()" routerLink="/login/admin" style="text-decoration: underline;font-weight:700;font-size:12px">Admin Login</a> -->
+          </div>
+        </div>
+        <div class="row loginHead ">
+          <div class="col-md-12 ">
+            <img src="assets/images/electra-logo.png" class="logoElectra img-responsive center-block mB20" alt="Electra">
+            <!-- <h4 class="text-center">Management Console Login</h4> -->
+             <!-- Change by ABHI under jira id SCRU-92 -->            
+            <h4 class="text-center">Client Console Login</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group" [ngClass]="{'has-error':username.invalid && username.touched || credentialIsValid}">
+              <label class="control-label">User Id</label>
+              <input type="text" class="form-control" formControlName="username">
+              <div *ngIf="username.invalid && username.touched" class=" text-danger">
+                <div *ngIf="username.errors?.required">
+                  User Name is required !
+                </div>
+                <!-- <div *ngIf="username.errors?.minlength">
+                  Invalid  Username !
+                </div> -->
+                <div *ngIf="username.errors?.maxlength">
+                  You have reached to its maximum limit !
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="mB5" [ngClass]="{'has-error':password.invalid && password.touched || credentialIsValid}">
+              <label class="control-label">Password</label>
+              <input type="password" class="form-control" formControlName="password">
+              <div *ngIf="password.invalid && password.touched" class=" text-danger">
+                <div *ngIf="password.errors?.required">
+                  Password is required !
+                </div>
+                <!-- <div *ngIf="password.errors?.minlength">
+                  Please provide atleast 4 characters !
+                </div> -->
+                <div *ngIf="password.errors?.maxlength">
+                  You have reached to its maximum limit !
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mB20">
+          <div class="col-md-12">
+            <a href="javascript:void()" routerLink="/forgot_password" class="pull-right" style="text-decoration: none;font-weight:700;font-size:12px">Forgot Password</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="submit" class="form-control btn btn-primary modalBtn" value="Login" (click)="loginRequest()">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <p class=" text-danger" *ngIf="serverError">{{serverErrMsg}}</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  <!-- </div> -->
+</div>
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+    </div>
+  </div>
+  <div *ngIf="loaderText">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3 class="">E-mail verification link has been sent to your email id, please check your mailbox</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <a role="button" routerLink="/login" class="btn btn-primary">Click Here To Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-alert [message]="currentMessage"></app-alert>

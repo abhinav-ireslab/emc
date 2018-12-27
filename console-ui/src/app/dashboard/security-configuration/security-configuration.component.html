@@ -1,0 +1,37 @@
+<h2>Security Configuration</h2>
+<hr>
+<!-- <hr style="margin-top: 5px;margin-bottom: 5px;border: 0;border-top: 2px solid #d8d0d0;"> -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="control-label">Client ID</label>
+      <input type="text" class="form-control" [value]="_cKey" readonly>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Client Secret Key</label>
+      <input type="text" class="form-control" [value]="_sKey" readonly>
+    </div>
+  </div>
+</div>
+
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+    </div>
+  </div>
+  <div *ngIf="loaderText">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3 class="">E-mail verification link has been sent to your email id, please check your mailbox</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <a role="button" routerLink="/login" class="btn btn-primary">Click Here To Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

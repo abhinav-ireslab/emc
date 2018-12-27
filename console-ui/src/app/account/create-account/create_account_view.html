@@ -1,0 +1,97 @@
+<nav class="navbar navbar-default navbar-fixed-top" style="background-color:#EBF5FB">
+  <div class="container-fluid">
+    <div class="navbar-header " style="min-width: 100%">
+      <a>
+        <img src="assets/images/logo.png" class="logoImg" alt="">
+      </a>
+      <!-- <div style="padding:20px;"> -->
+      <span class="hidden-xs navbarText pull-right navbarTextAdmin">Sign Out
+        <span class="glyphicon glyphicon-off" role="button" routerLink="/login/admin" style="margin-left:15px;"></span>
+      </span>
+      <span class="visible-xs navbarText pull-right navbarTextAdmin">
+        <span class="glyphicon glyphicon-off" role="button" routerLink="/login/admin" style="margin-left:15px;"></span>
+      </span>
+      <!-- </div> -->
+    </div>
+
+  </div>
+</nav>
+
+<!-- -->
+<div class="container-fluid content">
+  <aside id="sidebar_left" class="nano nano-light affix">
+    <div class="sidebar-left-content nano-content">
+      <header class="sidebar-header">
+      </header>
+
+      <ul class="nav sidebar-menu">
+        <li routerLinkActive="selected">
+          <a role="button">
+            <span class="fa fa-home"></span>
+            <span class="sidebar-title">Dashboard</span>
+          </a>
+        </li>
+        <li routerLinkActive="selected">
+          <a role="button" routerLink="client_mgmt">
+            <span class="fa fa-users"></span>
+            <span class="sidebar-title">Manage Clients</span>
+          </a>
+        </li>
+        <li routerLinkActive="selected">
+          <a role="button" routerLink="ekyc_mgmt">
+            <span class="fa fa-file-text"></span>
+            <span class="sidebar-title">eKYC Status</span>
+          </a>
+        </li>
+        <li routerLinkActive="selected">
+          <a role="button" routerLink="fee_config">
+            <span class="fa fa-file-text"></span>
+            <span class="sidebar-title">Fees</span>
+          </a>
+        </li>
+        <li routerLinkActive="selected">
+          <a role="button">
+            <span class="fa fa-file-text"></span>
+            <span class="sidebar-title">Customer Report</span>
+          </a>
+        </li>
+        <li routerLinkActive="selected">
+          <!-- <a class="selected" class="accordion-toggle" role="button"> -->
+          <a role="button">
+            <span class="fa fa-cogs"></span>
+            <span class="sidebar-title" id="setting">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+
+  <div class="tableContent">
+    <div class="row form-group" id="sidebarLeftSmall">
+      <div class="col-xs-12">
+        <select class="form-control">
+          <option value="0">
+            Dashboard</option>
+          <option value="1" selected>
+            Manage Clients</option>
+          <option value="2">
+            eKYC Status</option>
+          <option value="3">
+            Customer Report</option>
+          <option value="4">
+            Settings</option>
+        </select>
+      </div>
+    </div>
+
+    <router-outlet></router-outlet>
+
+  </div>
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom footer">
+  <div class="container">
+    <p class="footerText text-center ">Copyright (2018) owned by SendX Pte.Ltd. v1.0.0</p>
+  </div>
+</nav>

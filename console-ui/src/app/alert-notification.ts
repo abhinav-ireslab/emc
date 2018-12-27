@@ -1,0 +1,27 @@
+export const AlertNotification = {
+    "serverErr":"Your request cannot be completed at the moment. Please contact administrator",
+    "stellerErr":"It seems Stellar has some technical issue while creating your account.  Please try again",
+    "terminateSuc":"User Account has been terminated successfully",
+    "terminateCli":"Client Account has been terminated successfully",
+    "mobMailErr":"Please provide a valid email or mobile number to proceed",
+    "inviteLengthErr":"You can send maximum 10 invites at one's",
+    "noSubsInvite":"You are not subscribed for users invites",
+    "endSubsInvite":"You have reached to maximum limit of subscribed users invitation",
+    "accountSuc":"Your account has been updated successfully",
+    "twoFaEnabled":"2-Step Verification has been enabled successfully",
+    "twoFaDisabled":"2-Step Verification has been disabled successfully",
+    "tokenCrt":"Token has been created successfully",
+    "tokenIssue":"Token has been issued successfully",
+    "dateMaxFilter":"Please select valid date range. The transaction can be viewed for a maximum of 90 days",
+    "dateMinFilter":"To date should be greater than from date",
+    "wrongOtp":"You have provided an invalid OTP",
+    "usedResetLink":"You have already used this link to reset your password",
+    "updatedFee":"Settlement fee has been updated successfully",
+    "selectFormat":"Please select the file to download",
+    "ekycSuccess":"eKYC has been updated successfully",
+    "cSoon":"This service currently unavailable",
+
+// Form error Notifications
+    "selectCH": "Please select the currency you have",
+    "selectCW": "Please select the currency you want",
+}

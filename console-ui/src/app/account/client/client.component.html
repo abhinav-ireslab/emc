@@ -1,0 +1,261 @@
+<div class="clientManagent">
+  <div class="row  form-group">
+    <div class="col-xs-12">
+      <div class="pull-left">
+        <h2 style="margin:10px 0px">Client Management</h2>
+      </div>
+      <div class="pull-right">
+        <a class="hidden-xs btn btn-primary " role="button" data-toggle="modal" data-target="#addClientModal" data-backdrop="static"
+          data-keyboard="false" (click)="createRegistrationForm(null,'')">Add Client</a>
+        <a class="visible-xs btn-xs btn-primary" role="button" data-toggle="modal" data-target="#addClientModal" data-backdrop="static"
+          data-keyboard="false" (click)="createRegistrationForm(null,'')">Add Client</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive form-group">
+    <table class="table">
+      <thead>
+        <tr class="tableHead">
+          <th>Client Name</th>
+          <th>Email</th>
+          <th>Mobile No.</th>
+          <th>Correlation ID</th>
+          <th>Creation Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="serverErrorGetAllClient">
+          <td col-span-7 class="text-danger text-center">
+            {{serverErrMsg}}
+          </td>
+        </tr>
+        <tr *ngFor="let _client of _clients | paginate: { itemsPerPage:itemsPerPageAllowed,currentPage:p  ,totalItems:_totalElements};let i = index">
+          <td>{{_client.company_name}}</td>
+          <td>{{_client.email}}</td>
+          <td>{{_client.companyContact}}</td>
+          <td>{{_client.clientCorrelationId}}</td>
+          <td>{{_client.createdDate}}</td>
+          <td>{{_client.status}}</td>
+          <td>
+            <img class="imgEdit" role="button" src="assets/images/edit.png" alt="" data-toggle="modal" data-target="#addClientModal"
+              data-backdrop="static" data-keyboard="false" title="Edit" (click)="fillEditValues(_client,i)">
+            <img class="imgDelete imgEdit" role="button" src="assets/images/delete.png" alt="" data-toggle="modal" data-target="#ConfirmationModal"
+              data-backdrop="static" data-keyboard="false" title="Delete" (click)="SaveUserId(_client,i)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="pull-right">
+        <pagination-controls (pageChange)="getAllClients($event-1);p=$event" autoHide="true"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+  <div *ngIf="loaderText">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3>Email verification link has been sent to your email id, please check your mailbox</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <!-- <a role="button" routerLink="/login" class="btn btn-primary">Click Here To Login</a> -->
+          <a role="button" routerLink="/login" class="btn btn-primary">Click Here To Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--addClientModal  -->
+<div id="addClientModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">{{_FormHeader}}
+          <span role="button" class="close" (click)="modalClose()" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="registrationForm">
+          <div class="form-group" [ngClass]="{'has-error':cName.invalid && cName.touched}">
+            <label class="control-label">Company Name</label>
+            <input type="text" class="form-control" formControlName="cName" placeholder="Enter Company Name" [readonly]="disableControl">
+            <div *ngIf="cName.invalid && cName.touched" class=" text-danger">
+              <div *ngIf="cName.errors?.required">
+                Company name is required
+              </div>
+              <div *ngIf="cName.errors?.minlength">
+                Please provide atleast 3 characters
+              </div>
+              <div *ngIf="cName.errors?.maxlength">
+                You have reached to its maximum limit.
+              </div>
+            </div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error':userName.invalid && userName.touched || usernameErr}">
+            <label class="control-label">User Name</label>
+            <input type="text" class="form-control" formControlName="userName" placeholder="Enter User Name" (input)="usernameErr = false"
+              [readonly]="disableControl">
+            <div *ngIf="userName.invalid && userName.touched" class=" text-danger">
+              <div *ngIf="userName.errors?.required">
+                User name is required
+              </div>
+              <div *ngIf="userName.errors?.minlength">
+                Please provide atleast 3 characters
+              </div>
+              <div *ngIf="userName.errors?.maxlength">
+                You have reached to its maximum limit.
+              </div>
+            </div>
+            <div class=" text-danger" *ngIf="usernameErr">
+              User already exists !
+            </div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error':Email.invalid && Email.touched || emailErr}">
+            <label class="control-label">Email</label>
+            <input type="text" class="form-control" formControlName="Email" placeholder="Enter Email" (input)="emailErr = false" [readonly]="disableControl">
+            <div *ngIf="Email.invalid && Email.touched" class=" text-danger">
+              <div *ngIf="Email.errors?.required">
+                Email is required
+              </div>
+              <div *ngIf="Email.errors?.pattern">
+                Please provide a valid email id.
+              </div>
+            </div>
+            <div class=" text-danger" *ngIf="emailErr">
+              Email id already exists !
+            </div>
+          </div>
+
+          <div class="form-group" [ngClass]="{'has-error':Contact.invalid && Contact.touched}">
+            <label class="control-label">Mobile Number</label>
+            <input type="text" onkeypress='return ((event.charCode >= 48 && event.charCode <= 57) || (event.keyCode == 8 || event.keyCode == 9 || event.keyCode >= 37 && event.keyCode <= 40))'
+              class="form-control" formControlName="Contact" placeholder="Enter Mobile Number" [readonly]="disableControl">
+            <div *ngIf="Contact.invalid && Contact.touched" class=" text-danger">
+              <div *ngIf="Contact.errors?.required">
+                Mobile number is required
+              </div>
+              <div *ngIf="Contact.errors?.minlength">
+                Please provide a valid mobile number
+              </div>
+              <div *ngIf="Contact.errors?.maxlength">
+                Mobile number is invalid.
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group" [ngClass]="{'has-error':aType.invalid && aType.touched}">
+                <label class="control-label">Account Type</label>
+                <select class="form-control" formControlName="aType">
+                  <option value="" disabled>Select Account Type</option>
+                  <option value="0">Test Net</option>
+                  <!-- <option value="1">Main Net</option>
+                  <option value="2">Others</option> -->
+                </select>
+                <div *ngIf="aType.invalid && aType.touched" class=" text-danger">
+                  <div *ngIf="aType.errors?.required">
+                    Account Type is required
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group" [ngClass]="{'has-error':sType.invalid && sType.touched}">
+                <label class="control-label">Account Status</label>
+                <select class="form-control" formControlName="sType">
+                  <option value="" disabled>Select Account Status</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="SUSPENDED">Suspended</option>
+
+                </select>
+                <div *ngIf="sType.invalid && sType.touched" class=" text-danger">
+                  <div *ngIf="sType.errors?.required">
+                    Account Status is required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error':desc.invalid && desc.touched}">
+            <label class="control-label">Description</label>
+            <input type="text" class="form-control" formControlName="desc" placeholder="Enter Description" [readonly]="disableControl">
+            <div *ngIf="desc.invalid && desc.touched" class=" text-danger">
+              <div *ngIf="desc.errors?.required">
+                Description is required
+              </div>
+              <div *ngIf="desc.errors?.minlength">
+                Please provide atleast 3 characters
+              </div>
+              <div *ngIf="desc.errors?.maxlength">
+                You have reached to its maximum limit.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 ">
+              <a role="button" class="btn btn-primary pull-left" style="width:120px" (click)="modalClose()">Cancel</a>
+              <a role="button" class="btn btn-primary pull-right" style="width:120px" (click)="registerUser()">{{_modalSaveButton}}</a>
+            </div>
+            <div class="col-md-12" *ngIf="serverError">
+              <p class="text-danger">{{serverErrMsg}}</p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--addClientModal -->
+
+<!--ConfirmationModal  -->
+<div id="ConfirmationModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Terminate Client
+          <span role="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="text-center form-group">
+          <p>Are you sure you want to terminate the client ?</p>
+
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <a role="button" class="btn btn-sm btn-primary" style="width:80px" (click)="TerminateUser('Y')">Yes</a>
+            <a role="button" class="btn btn-sm btn-primary" style="width:80px" (click)="TerminateUser('N')"> No</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--ConfirmationModal -->
+<app-alert [message]="currentMessage"></app-alert>

@@ -1,0 +1,96 @@
+<nav class="navbar navbar-default" style="background-color:#ebf5fb">
+  <div class="container">
+    <div class="navbar-header" style="min-width: 100%">
+      <a role="button">
+        <!-- <img src="assets/images/logo.png" class=" brandImage" alt=""> -->
+        <img src="assets/images/logo.png" class=" logoImg" alt="">
+      </a>
+      <span class="hidden-xs navbarText pull-right navbarTextAdmin">Sign Out
+        <span class="glyphicon glyphicon-off" role="button" routerLink="/login" style="margin-left:15px;"></span>
+      </span>
+      <span class="visible-xs navbarText pull-right navbarTextAdmin">
+        <span class="glyphicon glyphicon-off" role="button" routerLink="/login" style="margin-left:15px;"></span>
+      </span>
+      <!-- <p class="navbarText pull-right">Sign Out
+        <span class="glyphicon glyphicon-off" role="button" routerLink="/login"></span>
+      </p> -->
+    </div>
+  </div>
+</nav>
+
+
+<div class="container" style="overflow-x: hidden">
+  <div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-tabs nav-justified navLinks">
+        <li routerLinkActive="active">
+          <a class="linkDiv ld1" routerLink="home">
+            <p>Home</p>
+          </a>
+        </li>
+        <li class="dropdown" routerLinkActive="active">
+          <a class="linkDiv ld2 dropdown-toggle" data-toggle="dropdown" href="javascript:void()">
+            <p>Configuration
+              <span class="caret"></span>
+            </p>
+          </a>
+          <ul class="dropdown-menu configurationItems">
+            <li routerLinkActive="active">
+              <a routerLink="account_config">Account Configuration</a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="security_config">Security Configuration</a>
+            </li>
+            <!-- <li routerLinkActive="active">
+              <a routerLink="product_config">Product Configuration</a>
+            </li> -->
+          </ul>
+        </li>
+        <li routerLinkActive="active">
+          <a class="linkDiv ld3" routerLink="token_mgmt">
+            <p>Token Mgmt</p>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a class="linkDiv ld4" routerLink="user_mgmt">
+            <p>User Mgmt</p>
+          </a>
+        </li>
+        <!-- <li routerLinkActive="active">
+          <a class="linkDiv ld5" routerLink="admin_user_mgmt">
+            <p>Rate Exchange</p>
+          </a>
+        </li> -->
+        <li class="dropdown" routerLinkActive="active">
+          <a class="linkDiv ld6 dropdown-toggle" data-toggle="dropdown" href="javascript:void()">
+            <p>Reporting
+              <span class="caret"></span>
+            </p>
+          </a>
+          <ul class="dropdown-menu configurationItems" style="right:0">
+            <li routerLinkActive="active">
+              <a routerLink="/dashboard/business_ledger">Business Ledger Detail Report</a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/dashboard/BLR">Business Liquidity Report</a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/dashboard/STR">Suspended Transaction Report</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mB70">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom footer">
+  <div class="container">
+    <p class="footerText text-center ">Copyright (2018) owned by SendX Pte.Ltd. v1.0.0</p>
+  </div>
+</nav>

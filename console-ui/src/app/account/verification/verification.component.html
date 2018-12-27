@@ -1,0 +1,99 @@
+<div class="kycStatus">
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#home" (click)="getEkycRequest()">eKYC Status</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#menu1"  (click)="getEkycApprovedList()">Approved Request</a>
+    </li>
+  </ul>
+
+  <div class="tab-content" style="margin-top: 10px">
+    <div id="home" class="tab-pane fade in active">
+      <div class="row  form-group">
+        <div class="col-xs-12">
+          <div class="pull-left">
+            <h2 style="margin:10px 0px">eKYC Status</h2>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive form-group">
+        <table class="table">
+          <thead>
+            <tr class="tableHead">
+              <th>Name</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Comment</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let _ekycStatus of _ekycStatusList | paginate: { itemsPerPage: _itemsPerPageAllowed, currentPage:p1 , id:'first' };let i = index">
+              <td>{{_ekycStatus.name}}</td>
+              <td>{{_ekycStatus.date}}</td>
+              <td>{{_ekycStatus.status}}</td>  
+              <td>{{_ekycStatus.comment}}</td>
+              <td class="text-center">
+                <a role="button" class="btn-sm btn-primary" (click)="approval(_ekycStatus,i)" >Approve</a>
+                <!-- <a role="button" class="visible-xs btn-xs btn-primary" (click)="approval(_ekycStatus,i)" >Approve</a> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="pull-right">
+            <pagination-controls (pageChange)="p1=$event" autoHide="true" id="first" ></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="menu1" class="tab-pane fade">
+      <div class="row  form-group">
+        <div class="col-xs-12">
+          <div class="pull-left">
+            <h2 style="margin:10px 0px">Approved Request</h2>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive form-group">
+        <table class="table">
+          <thead>
+            <tr class="tableHead">
+              <th>Name</th>
+              <th>Created Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let _ekycApproved of _ekycApprovedList | paginate: { itemsPerPage: _itemsPerPageAllowed, currentPage:p2 ,id:'second'}">
+              <td>{{_ekycApproved.name}}</td>
+              <td>{{_ekycApproved.date}}</td>
+              <td>{{_ekycApproved.status}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="pull-right">
+            <pagination-controls (pageChange)="p2=$event" autoHide="true" id="second"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--ConfirmationModal -->
+<app-alert [message]="currentMessage"></app-alert>
+
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+</div>

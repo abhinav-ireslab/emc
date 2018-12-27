@@ -1,0 +1,178 @@
+<div class="row" style="margin-top:10px">
+  <div class="col-xs-12">
+    <div class="pull-left">
+      <h2 style="margin:10px 0px">Rate Exchanger</h2>
+    </div>
+    <div class="pull-right">
+      <a class="hidden-xs btn btn-primary" role="button" data-toggle="modal" data-target="#updateFee" data-backdrop="static" data-keyboard="false" (click)="createUpdateForm()">Update Fee</a>
+      <a class="visible-xs btn-xs btn-primary" role="button" data-toggle="modal" data-target="#updateFee" data-backdrop="static" data-keyboard="false" (click)="createUpdateForm()">
+        <span class="fa fa-plus"></span> Update Fee</a>
+    </div>
+  </div>
+</div>
+<div class="exchangebody">
+  <form [formGroup]="exchangeForm">
+    <div class="row form-group">
+      <div class="col-md-6">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-12" [ngClass]="{'has-error':selectError}">
+              <label class="control-label">Currency I Have:</label>
+              <!-- <select class="form-control" (change)="exchangeCurrencyFrom($event)"> -->
+              <select class="form-control" (change)="exchangeCurrency()" formControlName="currencyFrom">
+                <!-- <option selected>SGT</option> -->
+                <option selected disabled value=''>Please select currency</option>
+                <option *ngFor="let currency of _currencyList" [ngValue]="currency">{{currency}}</option>
+              </select>
+              <div *ngIf="selectError" class=" text-danger">
+                {{AlertNotification.selectCH}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mT10">
+          <div class="form-group">
+            <div class="col-md-12">
+              <label class="">Amount:</label>
+              <input type="text" placeholder="x.00" class="form-control" (input)="validateFromValue($event)" formControlName="currencyFromInput"
+                maxlength="8">
+              <div *ngIf="currencyFromInput.invalid && currencyFromInput.touched || currencyFromInvalid" class=" text-danger">
+                <div *ngIf="currencyFromInput.errors?.pattern">
+                  Please provide numbers only
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-12" [ngClass]="{'has-error':selectError}">
+              <label class="control-label">Currency I Want:</label>
+              <select class="form-control" (change)="exchangeCurrency()" formControlName="currencyTo">
+                <option selected disabled value=''>Please select currency</option>
+                <option *ngFor="let currency of _currencyList" [ngValue]="currency">{{currency}}</option>
+              </select>
+              <div *ngIf="selectError" class=" text-danger">
+                {{AlertNotification.selectCW}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 
+        <span class=" text-danger" *ngIf="selectError ">
+          Please select currency first.
+        </span> -->
+        <div class="row mT10">
+          <div class="form-group">
+            <div class="col-md-12">
+              <label class="">Amount:</label>
+              <input type="text" class="form-control" placeholder="x.00" (input)="validateToValue($event)" formControlName="currencyToInput"
+                 maxlength="8">
+              <div *ngIf="currencyToInput.invalid && currencyToInput.touched || currencyToInvalid" class=" text-danger">
+                <!-- <div *ngIf="currencyToInput.errors?.required || currencyToInvalid && !currencyToInput.errors?.pattern">
+                  No. of tokens can't be blank.
+                </div> -->
+                <div *ngIf="currencyToInput.errors?.pattern">
+                  Please provide numbers only.
+                </div>
+                <div *ngIf="currencyToInvalid && !currencyToInput.errors?.pattern">
+                  Please provide value greater than 0.
+                </div>
+                <!-- <div *ngIf="selectError && !currencyToInput.errors?.pattern && !currencyToInvalid">
+                  Please select currency first.
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          Settlement Fee is charged at {{this.exchangeFee}} % per SGT.
+          <!-- Conversion charge will be charged @ {{this.exchangeFee}} per SGT, your conversion charge =
+          <strong>{{finalRate}} SGT</strong> -->
+          <!-- <a href="#" class="alert-link">read this message</a>. -->
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateFee" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" (click)="createUpdateForm()">&times;</button>
+        <h4 class="modal-title text-center">Update Fee</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="updateForm">
+          <div class="row form-group">
+            <div class="col-md-12" [ngClass]="{'has-error':convertFrom.invalid && convertFrom.touched}">
+              <label class="control-label">Currency I Have:</label>
+              <select class="form-control" (change)="exCurrency()" formControlName="convertFrom">
+                <option selected disabled value=''>Select currency</option>
+                <option *ngFor="let currency of _currencyList" [ngValue]="currency">{{currency}}</option>
+              </select>
+              <div *ngIf="convertFrom.invalid && convertFrom.touched" class=" text-danger">
+                <div *ngIf="convertFrom.errors?.required">
+                  {{AlertNotification.selectCH}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row form-group">
+            <div class="col-md-12" [ngClass]="{'has-error':convertFrom.invalid && convertFrom.touched}">
+              <label class="control-label">Currency I Want:</label>
+              <select class="form-control" (change)="exCurrency()" formControlName="convertTo">
+                <option selected disabled value=''>Select currency</option>
+                <option *ngFor="let currency of _currencyList" [ngValue]="currency">{{currency}}</option>
+              </select>
+              <div *ngIf="convertTo.invalid && convertTo.touched" class=" text-danger">
+                <div *ngIf="convertTo.errors?.required">
+                  {{AlertNotification.selectCW}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row form-group">
+            <div class="col-md-12" [ngClass]="{'has-error':convertFee.invalid && convertFee.touched}">
+              <label class="control-label">Settlement Fee:</label>
+              <input type="text" class="form-control" [(ngModel)]="_currentFee" (input)="validateFee($event)" formControlName="convertFee"
+                maxlength="8" placeholder="x.00">
+              <div *ngIf="convertFee.invalid && convertFee.touched" class=" text-danger">
+                <div *ngIf="convertFee.errors?.pattern">
+                  Please provide numbers only
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <!-- <button class="btn btn-primary" >Update</button> -->
+              <a role="button" class="btn btn-primary" (click)="updateFee()">Update</a>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-alert [message]="currentMessage"></app-alert>

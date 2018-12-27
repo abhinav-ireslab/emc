@@ -1,0 +1,185 @@
+<div class="row" style="margin-top:10px">
+  <div class="col-xs-12">
+    <div class="pull-left">
+      <h2 style="margin:10px 0px">Token Management</h2>
+    </div>
+    <div class="pull-right">
+      <a class="hidden-xs btn btn-primary" role="button" data-toggle="modal" data-target="#addTokenModal" data-backdrop="static"
+        data-keyboard="false">Create Token</a>
+      <a class="visible-xs btn-xs btn-primary" role="button" data-toggle="modal" data-target="#addTokenModal" data-backdrop="static"
+        data-keyboard="false">
+        <span class="fa fa-plus"></span> Token</a>
+    </div>
+  </div>
+</div>
+<div class="table-responsive form-group">
+  <table class="table">
+    <thead>
+      <tr class="tableHead">
+        <th>Token Name</th>
+        <th>Token Code</th>
+        <th>Batch Quantity</th>
+        <th>Correlation ID</th>
+        <th>Creation Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="noRecord" class="text-center">
+        <td colspan="7">No record found</td>
+      </tr>
+      <tr *ngIf="serverError" class="text-center">
+        <td colspan="7">{{serverErrMsg}}</td>
+      </tr>
+      <tr *ngFor="let _token of _tokens | paginate: { itemsPerPage:itemsPerPageAllowed, currentPage: p ,totalItems:_totalElements }"
+        style="border-bottom:1px solid #ddd">
+        <td>{{_token.tokenName}}</td>
+        <td>{{_token.tokenCode}}</td>
+        <td>{{_token.batchQuantity}}</td>
+        <td>{{_token.tokenCorrelationId}}</td>
+        <td>{{_token.createdDate}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="row" *ngIf="!noRecord">
+  <div class="col-xs-12">
+    <div class="pull-right">
+      <pagination-controls (pageChange)="getAllTokens($event-1);p=$event" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+</div>
+
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal pop up -->
+<!-- <button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
+<div class="modal fade" id="tokenConfirmation" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Token Confirmation</h4>
+      </div>
+      <div class="modal-body">
+        <h4 class="noMargin">Token has been created successfully !</h4>
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-2 col-md-offset-5">
+          <a type="button" class="btn btn-block btn-primary" data-dismiss="modal">OK</a>
+        </div>
+        <!-- <div class="col-md-2 col-md-offset-5">
+          <a type="button" class="btn btn-block btn-primary" data-dismiss="modal" (click)="this.tokenForm()">Check ledger balance</a>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal pop up end-->
+
+
+<!--addClientModal  -->
+<div id="addTokenModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Add Token
+          <span role="button" class="close" (click)="modalClose()" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createTokenForm">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group" [ngClass]="{'has-error':clientCorrelationId.invalid && clientCorrelationId.touched}">
+                <label class="control-label">Client ID</label>
+                <input type="text" class="form-control" formControlName="clientCorrelationId" readonly>
+                <div *ngIf="clientCorrelationId.invalid && clientCorrelationId.touched" class=" text-danger">
+                  <div *ngIf="clientCorrelationId.errors?.required">
+                    Client ID can't be blank
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" [ngClass]="{'has-error':batchQuantity.invalid && batchQuantity.touched || batchQuantityErr}">
+                <label class="control-label">Batch Quantity</label>
+                <input type="text" class="form-control" formControlName="batchQuantity" onkeypress='return ((event.charCode >= 48 && event.charCode <= 57) || (event.keyCode == 8 || event.keyCode == 9 || event.keyCode >= 37 && event.keyCode <= 40))'
+                  (input)="checkBatchQuantity($event)">
+                <div *ngIf="batchQuantity.invalid && batchQuantity.touched" class=" text-danger">
+                  <div *ngIf="batchQuantity.errors?.required">
+                    Batch quantity can't be blank
+                  </div>
+                  <div *ngIf="batchQuantity.errors?.maxlength">
+                    You have reached to its maximum limit !
+                  </div>
+                </div>
+                <div *ngIf="batchQuantityErr && batchQuantity.valid" class=" text-danger">
+                  Batch quantity must be in between 1 - 50000 !
+                </div>
+              </div>
+              <div class="form-group" [ngClass]="{'has-error':tokenName.invalid && tokenName.touched}">
+                <label class="control-label">Token Name</label>
+                <input type="text" class="form-control" formControlName="tokenName">
+                <div *ngIf="tokenName.invalid && tokenName.touched" class=" text-danger">
+                  <div *ngIf="tokenName.errors?.required">
+                    Token Name can't be blank
+                  </div>
+                  <div *ngIf="tokenName.errors?.minlength && !tokenName.errors?.pattern">
+                    Token Name must be of atleast 3 alphabets !
+                  </div>
+                  <div *ngIf="tokenName.errors?.maxlength">
+                    You have reached to its maximum limit !
+                  </div>
+                  <div *ngIf="tokenName.errors?.pattern">
+                    Token name accept alphabets only !
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" [ngClass]="{'has-error':tokenCode.invalid && tokenCode.touched}">
+                <label class="control-label">Token Code</label>
+                <input type="text" class="form-control" formControlName="tokenCode" style="text-transform:uppercase" (input)="serverErrorToken = false">
+                <div *ngIf="tokenCode.invalid && tokenCode.touched" class=" text-danger">
+                  <div *ngIf="tokenCode.errors?.required">
+                    Token Code can't be blank
+                  </div>
+                  <div *ngIf="tokenCode.errors?.pattern">
+                    Token code must be of 3 alphabets only !
+                  </div>
+                </div>
+                <div *ngIf="serverErrorToken" class="text-danger">
+                  <p>{{serverErrMsg}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="hidden-xs col-md-12 ">
+                  <a role="button" class="btn btn-primary pull-left" style="width:120px" (click)="modalClose()">Cancel</a>
+                  <a role="button" class="btn btn-primary pull-right" style="width:120px" (click)="createToken()">Create Token</a>
+                </div>
+                <div class="visible-xs">
+                  <div class="col-xs-6">
+                    <a role="button" class="btn-xs btn-primary pull-left" style="width:90px"  (click)="modalClose()">Cancel</a>
+                  </div>
+                  <div class="col-xs-6">
+                    <a role="button" class="btn-xs btn-primary pull-right" style="width:90px" (click)="createToken()">Create Token</a>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--addClientModal -->
+<app-alert [message]="currentMessage"></app-alert>

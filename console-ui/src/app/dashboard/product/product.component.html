@@ -1,0 +1,123 @@
+<div class="productDescription">
+  <div class="row  form-group">
+    <div class="col-xs-12">
+      <div class="pull-left">
+        <h2 style="margin:10px 0px">Product Management</h2>
+      </div>
+      <div class="pull-right">
+        <a class="hidden-xs btn btn-primary " role="button" data-toggle="modal" data-target="#productModal" data-backdrop="static"
+          data-keyboard="false" >Add Product</a>
+        <a class="visible-xs btn-xs btn-primary" role="button" data-toggle="modal" data-target="#productModal" data-backdrop="static"
+          data-keyboard="false" >Add Product</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive form-group">
+    <table class="table">
+      <thead>
+        <tr class="tableHead">
+          <th>Product Code</th>
+          <th>Product Type</th>
+          <th>Product Description</th>
+          <th>Product Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngFor="let _client of _clients | paginate: { itemsPerPage:itemsPerPageAllowed,currentPage:p  ,totalItems:_totalElements};let i = index">
+          <td>ABC-2001</td>
+          <td>Electronic</td>
+          <td>Samsung Mobile</td>
+          <td>{{_client.clientCorrelationId}}</td>
+          <td>
+            <img class="imgEdit" role="button" src="assets/images/edit.png" alt="" data-toggle="modal" data-target="#addClientModal"
+              data-backdrop="static" data-keyboard="false" title="Edit" (click)="fillEditValues(_client,i)">
+            <img class="imgDelete imgEdit" role="button" src="assets/images/delete.png" alt="" data-toggle="modal" data-target="#ConfirmationModal"
+              data-backdrop="static" data-keyboard="false" title="Delete" (click)="SaveUserId(_client,i)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="pull-right">
+        <pagination-controls (pageChange)="p=$event" autoHide="true"></pagination-controls>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="productModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title text-center">Add Product</h4>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="productForm">
+            <div class="row form-group">
+              <div class="col-xs-12" [ngClass]="{'has-error':pCode.invalid && pCode.touched}">
+                <label class="control-label">Product Code</label>
+                <input type="text" maxlength="50" class="form-control" formControlName="pCode">
+                <div *ngIf="pCode.invalid && pCode.touched" class=" text-danger">
+                  <div *ngIf="pCode.errors?.required">
+                    Product code is required
+                  </div>
+                  <div *ngIf="pCode.errors?.minlength">
+                    Please provide atleast 3 characters
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-xs-12" [ngClass]="{'has-error':pType.invalid && pType.touched}">
+                <label class="control-label">Product Type</label>
+                <input type="text" maxlength="50" class="form-control" formControlName="pType">
+                <div *ngIf="pType.invalid && pType.touched" class=" text-danger">
+                  <div *ngIf="pType.errors?.required">
+                    Product code is required
+                  </div>
+                  <div *ngIf="pType.errors?.minlength">
+                    Please provide atleast 3 characters
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-xs-12">
+                <label class="control-label">Product Description</label>
+                <textarea class="form-control tarea" maxlength="100" style="height:100px; max-height: 100px;min-height: 100px;" formControlName="pDesc"></textarea>
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-xs-12" [ngClass]="{'has-error':pPrice.invalid && pPrice.touched}">
+                <label class="control-label">Product Price</label>
+                <input type="text" maxlength="10" class="form-control" formControlName="pPrice">
+                <div *ngIf="pPrice.invalid && pPrice.touched" class=" text-danger">
+                  <div *ngIf="pPrice.errors?.required">
+                    Product code is required
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row form-group hidden-xs">
+              <div class="col-xs-12">
+                <a role="button" class="btn btn-primary pull-left" style="width:120px">Cancel</a>
+                <a role="button" class="btn btn-primary pull-right" style="width:120px" (click)="saveProduct()">Save</a>
+              </div>
+            </div>
+            <div class="row form-group visible-xs">
+              <div class="col-xs-12">
+                <a role="button" class="btn-xs btn-primary pull-left" style="min-width:80px">Cancel</a>
+                <a role="button" class="btn-xs btn-primary pull-right" style="min-width:80px" (click)="saveProduct()">Save</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<!-- <div class="bodyCover"> -->
+<div class="firstScreen " >
+    <!-- <div class="container"> -->
+  
+      <div class="row loginScreen">
+        <div class="col-sm-12">
+          <div class="tokenPage tokenPage1">
+            <fieldset class="fieldSet form-group">
+              <legend class="fieldSetLegend">
+                <h5 class="tokenHeading form-group">Electra user validation</h5>
+              </legend>
+              <form [formGroup]="otpValidationForm" novalidate (submit)="userOtpValidation()">
+                <div class="row form-group">
+                  <div class="col-md-8 col-md-offset-2">
+                    <label> Please enter your OTP</label>
+                    <input type="text" class="form-control" formControlName="otp" (input)="otpCheck()">
+                    <span class="errText" *ngIf="isSerErrorMessage">{{serErrorMessage}}</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 col-md-offset-4">
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    <!-- </div> -->
+  </div>
+  <div class="loaderBackground" *ngIf="loaderMain">
+    <div class="loader" *ngIf="loader">
+      <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+       
+      </div>
+    </div>
+  </div>
+<!-- </div> -->
+
+<app-alert [message]="currentMessage"></app-alert>

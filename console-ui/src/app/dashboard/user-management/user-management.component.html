@@ -1,0 +1,485 @@
+
+  <div class="row" style="margin-top:10px">
+    <div class="col-xs-12">
+      <div class="pull-left">
+        <h2 style="margin:10px 0px">User Management</h2>
+      </div>
+      <div class="pull-right">
+        <a class="hidden-xs btn btn-primary" role="button" (click)="getInvite()">Send Invites</a>
+        <a class="visible-xs btn-xs btn-primary" role="button" (click)="getInvite()"><span class="fa fa-send-o"></span> Invites</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive form-group">
+  <table class="table">
+    <thead>
+      <tr class="tableHead">
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Status</th>
+        <th>Correlation ID</th>
+        <th>Creation Date</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="noRecord" class="text-center">
+        <td colspan="7">No record found</td>
+      </tr>
+      <tr *ngFor="let _user of usersList | paginate: { itemsPerPage:itemsPerPageAllowed, currentPage: p };let i = index" style="border-bottom:1px solid #ddd">
+        <td>{{_user.firstName}}</td>
+        <td>{{_user.lastName}}</td>
+        <td>{{_user.status}}</td>
+        <td>{{_user.userCorrelationId}}</td>
+        <td>{{_user.createdDate }}</td>
+        <td>
+          <button type="button" class="modalBtn" data-toggle="modal" data-backdrop="static" data-target="#tokensIssue" (click)="getUserDetail(_user)">Issue Tokens</button>
+        </td>
+        <td class="text-center">
+          <img class="imgEdit" role="button" src="assets/images/edit.png" alt="" data-toggle="modal" data-target="#editUserModal" data-backdrop="static"
+            data-keyboard="false" title="Edit" (click)="fillEditValues(_user,i)">
+          <img class="imgDelete imgEdit" role="button" src="assets/images/delete.png" alt="" data-toggle="modal" data-target="#ConfirmationModal1"
+            data-backdrop="static" data-keyboard="false" title="Delete" (click)="SaveUserId(_user,i)">
+          <img class="imgEdit" role="button" src="assets/images/usel/monitoring.png" alt="View Report" (click)='openUserViewReportModal(_user)'
+            data-toggle="modal" data-target="#Reporting" data-backdrop="static" data-keyboard="false">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="pull-right">
+      <pagination-controls (pageChange)="p=$event" autoHide="true"></pagination-controls>
+    </div>
+  </div>
+</div>
+
+
+<div id="editUserModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Edit User
+          <span role="button" class="close" (click)="modalClose()" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editUserForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">First Name</label>
+                <input type="text" class="form-control" formControlName="firstName" placeholder="First Name">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">Last Name</label>
+                <input type="text" class="form-control" formControlName="lastName" placeholder="Last Name">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label">Correlation ID</label>
+            <input type="text" class="form-control" formControlName="CorrelationID" placeholder="Correlation ID">
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">User Status</label>
+                <select class="form-control" formControlName="UserStatus">
+                  <option value="" disabled>Select User Status</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="SUSPENDED">Suspended</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 ">
+              <a role="button" class="btn btn-primary pull-left" style="width:120px" (click)="modalClose()">Cancel</a>
+              <a role="button" class="btn btn-primary pull-right" style="width:120px" (click)="SaveUser()">Save</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="ConfirmationModal1" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Terminate User
+          <span role="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="text-center form-group">
+          <p>Are you sure you want to terminate the user ?</p>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <a role="button" class="btn btn-sm btn-primary" style="width:80px" (click)="SuspendUser('Y')">Yes</a>
+            <a role="button" class="btn btn-sm btn-primary" style="width:80px" (click)="SuspendUser('N')"> No</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="tokensIssue" class="modal fade" role="dialog">
+  <div class="modal-dialog userAccountModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">Issue Tokens
+          <span role="button" class="close" data-dismiss="modal" data-backdrop="static" data-keyboard="false" (click)='createIssueTokenForm()'
+            aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="IssueTokenForm">
+          <div class="row form-group" [ngClass]="{'has-error':selectToken.invalid && selectToken.touched}">
+            <label class="col-md-5 modalLabel  control-label">Token Name :</label>
+            <div class="col-md-7">
+              <select class="form-control" formControlName="selectToken" (change)='userAssetBalance()'>
+                <option value="" disabled>Please Select</option>
+                <option *ngFor="let _tok of tokenList" [ngValue]="_tok"> {{_tok.assetCode}}</option>
+              </select>
+              <div *ngIf="selectToken.invalid && selectToken.touched" class=" text-danger">
+                <div *ngIf="selectToken.errors?.required">
+                  Token name can't be blank
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row form-group">
+            <label class="col-md-5 modalLabel">Available Balance:</label>
+            <div class="col-md-7">
+              <input type="text" class="form-control" [value]='userBalance' disabled>
+            </div>
+          </div>
+          <div class="row mB30 " [ngClass]="{'has-error':tokenNo.invalid && tokenNo.touched || tokenValueInvalid}">
+            <label class="col-md-5 modalLabel control-label">No. Of Tokens:</label>
+            <div class="col-md-7">
+              <input type="text" class="form-control" [ngModel]="tokenValueInput" formControlName="tokenCount" placeholder="0.00" maxlength="13"
+                (input)="validateTokenValue($event)">
+              <div *ngIf="tokenNo.invalid && tokenNo.touched || tokenValueInvalid" class=" text-danger">
+                <div *ngIf="tokenNo.errors?.required || tokenValueInvalid && !tokenNo.errors?.pattern">
+                  No. of tokens can't be blank
+                </div>
+                <div *ngIf="tokenNo.errors?.pattern">
+                  Please provide numbers only!
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row form-group">
+            <div class="col-md-6 col-md-offset-3">
+              <input type="button" class="form-control btn btn-success modalBtn" value="Issue" (click)=issueToken()>
+            </div>
+          </div>
+          <div class="row" *ngIf="serverError">
+            <div class="col-md-12  text-danger">
+              {{serverErrMsg}}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="Reporting" class="modal fade" role="dialog">
+  <div class="modal-dialog " style="width:90%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center">User Ledger:
+          <span>{{AccountHolderName}}</span>
+          <span role="button" class="close" (click)="closeViewReportModal()" aria-hidden="true">&times;</span>
+        </h4>
+      </div>
+      <div class="modal-body" infinite-scroll [infiniteScrollDistance]="modalScrollDistance" [infiniteScrollThrottle]="modalScrollThrottle"
+        [scrollWindow]="false" (scrolled)="userViewReport()" style=" overflow-y: scroll;height:500px">
+        <div class="panel panel-default table-responsive" *ngIf="!_noAssetDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-3">
+                <h4 class="noMargin">Assets</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="text-center">Code</th>
+                  <th class="text-center">Limit</th>
+                  <th class="text-center">Issuer</th>
+                  <th class="text-center">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let userAsset of _userAssets">
+                  <td class="text-center">{{userAsset.code}}</td>
+                  <td class="text-center">{{userAsset.limit}}</td>
+                  <td class="text-center">{{userAsset.issuer}}</td>
+                  <td class="text-center">{{userAsset.balance | number:'1.7'}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel panel-default" *ngIf="_noAssetDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="noMargin">Assets</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <h3 class="text-center">No record found !</h3>
+          </div>
+        </div>
+
+        <div class="panel panel-default" *ngIf="_noPayDetails">
+          <div class="panel-heading panelHead">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="noMargin">Payment</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <h3 class="text-center">No record found !</h3>
+          </div>
+        </div>
+
+        <div *ngIf="!_noPayDetails">
+          <div class="panel panel-default" *ngFor="let record of _userRecords; let i = index">
+            <div class="panel-heading panelHead">
+              <div class="row">
+                <div class="col-md-3">
+                  <h4 class="noMargin" *ngIf="record.type == 'payment' || record.type == null ">Payment</h4>
+                  <h4 class="noMargin" *ngIf="record.type == 'change_trust'">Change Trust</h4>
+                </div>
+                <div class="col-md-9" style="overflow-wrap: break-word">
+                  <h5 class="noMargin text-right">Transaction hash
+                    <span class="glyphicon glyphicon-menu-right" style="top:2px"></span>
+                    <b>{{record.transactionHash}}</b>
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="panel-body table-responsive">
+              <table class="table ">
+                <thead>
+                  <tr>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">Trustor</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">Trustee</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null ">Sender</th>
+                    <th style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null ">Receiver</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr role="button" (click)="als.keyRecord(i)">
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">{{record.trustee}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'change_trust'">{{record.trustor}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null">{{als.getValueFrom(record)}}</td>
+                    <td style="width:50%" class="text-center" *ngIf="record.type == 'payment' || record.type == null">{{als.getValueTo(record)}}</td>
+                  </tr>
+                  <tr id={{i}} style="display:none">
+                    <td style="width:50%" class="text-center">{{record.from}}</td>
+                    <td style="width:50%" class="text-center">{{record.to}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                <div class="col-md-6">
+                  <p class="noMargin">{{record.createdAt | newDatePipe }}
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="noMargin text-right" *ngIf="record.type == 'payment' || record.type == null">{{record.assetCode}} :
+                    <span>{{record.amount | number:'1.7' }}</span>
+                  </p>
+                  <p class="noMargin text-right" *ngIf="record.type == 'change_trust'">Limit :
+                    <span>{{record.limit | number:'1.7' }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row ">
+            <div class="col-md-12">
+              <div *ngIf="noMoreRecords">
+                <div class="alert alert-info">
+                  <strong>No more data found </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pop up -->
+<div class="modal fade" id="inviteModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content ">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Send Invites</h4>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="form-group"> -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-info">
+              <span>
+                <strong>Subscription Plan:</strong> {{subsPlan}}</span>
+
+              <span class="pull-right">
+                <strong>Subscribed Users:</strong> {{subsUsers}}</span>
+
+            </div>
+          </div>
+        </div>
+        <!-- </div> -->
+        <!-- <h4 class="noMargin">Token has been created successfully !</h4> -->
+        <form [formGroup]="inviteForm">
+          <div class=" form-group">
+            <div class="row">
+              <div class="col-md-12" [ngClass]="{'has-error': inviteEmail.invalid}">
+                <label class="control-label">Enter email addresses</label>
+              </div>
+              <div class="col-md-12 ">
+                <div class="input-group">
+                  <input type="text" class="form-control" [ngClass]="{'errorInput': inviteEmail.invalid}" formControlName="inviteEmail">
+                  <span class="input-group-addon btn btn-primary" type="button" (click)="addEmail()">
+                    <i class="glyphicon glyphicon-plus"></i>
+                  </span>
+                </div>
+                <div *ngIf="inviteEmail.invalid" class=" text-danger">
+                  <!-- <div *ngIf="inviteEmail.errors?.required">
+                    Email can't be blank
+                  </div> -->
+                  <div *ngIf="inviteEmail.errors?.pattern">
+                    Please provide a valid email id
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class=" form-group">
+            <div class="row">
+              <!-- <div class="col-md-12">
+              <label>Enter email addresses</label>
+            </div> -->
+              <div class="col-md-12">
+                <textarea class="form-control" disabled [value]="emailEntered"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class=" form-group">
+            <div class="row">
+              <div class="col-md-12" [ngClass]="{'has-error': inviteCode.invalid && inviteCode.touched || inviteMobile.invalid && inviteMobile.touched}">
+                <label class="control-label">Add mobile number</label>
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-3" style="padding-right: 0px;">
+                <select class="form-control" formControlName="inviteCode" [ngClass]="{'errorInput': inviteCode.invalid && inviteCode.touched}"
+                  (change)="addCode($event)">
+                  <!-- <option value="" selected disabled >Code</option> -->
+                  <option value="{{country.countryDialCode}}" *ngFor="let country of countryList">{{country.countryDialCode}}</option>
+                  <!-- <option value="CHI">CHI</option> -->
+                </select>
+              </div>
+              <div class="col-md-10 col-sm-10 col-xs-9">
+                <div class="input-group">
+                  <input type="text" class="form-control" formControlName="inviteMobile" [ngClass]="{'errorInput': inviteMobile.invalid }"
+                    maxlength="12">
+                  <span class="input-group-addon btn btn-primary" type="button" (click)="addMobile()">
+                    <i class="glyphicon glyphicon-plus"></i>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+            <div class="">
+              <div *ngIf="inviteMobile.invalid " class=" text-danger">
+                <!-- <div *ngIf="inviteMobile.errors?.required">
+                  Mobile number can't be blank
+                </div> -->
+                <div *ngIf="inviteMobile.errors?.pattern || inviteMobile.errors?.minlength">
+                  Please provide a valid mobile number
+                </div>
+                <!-- <div *ngIf="inviteMobile.errors?.minlength">
+                  Please provide a valid mobile number
+                </div> -->
+              </div>
+
+            </div>
+
+          </div>
+          <div class=" form-group">
+            <div class="row">
+              <!-- <div class="col-md-12">
+              <label>Mobile Number</label>
+            </div> -->
+              <div class="col-md-12">
+                <textarea class="form-control" disabled [value]="mobileEntered"></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- <div class=" form-group"> -->
+          <div class="row">
+
+            <div class="col-md-12">
+              <a type="button" class="btn btn-primary pull-left" data-dismiss="modal" style="width:120px">Cancel</a>
+              <a type="button" class="btn btn-primary pull-right" (click)="sendInvite()" style="width:120px">Invite</a>
+            </div>
+          </div>
+          <!-- </div> -->
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Modal pop up end-->
+
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+    </div>
+  </div>
+
+</div>
+<div class="loaderBackground" *ngIf="loaderForLedger && nextLedger == 0">
+  <div class="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+    </div>
+  </div>
+</div>
+
+<app-alert [message]="currentMessage"></app-alert>

@@ -1,0 +1,216 @@
+<h2>Account Configuration</h2>
+<hr>
+<!-- <hr style="margin-top: 5px;margin-bottom: 5px;border: 0;border-top: 2px solid #d8d0d0;"> -->
+
+<form [formGroup]="updateForm">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Company Name</label>
+        <input id="name" type="text" class="form-control" formControlName="cName" placeholder=" Company Name">
+      </div>
+      <div class="form-group">
+        <label class="control-label">Company Address</label>
+        <input type="text" class="form-control" formControlName="cAddress" placeholder=" Company Address">
+      </div>
+      <div class="row form-group">
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">Country</label>
+            <input type="text" class="form-control" formControlName="cCountry" placeholder=" Country">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">State</label>
+            <input type="text" class="form-control" formControlName="cState" placeholder=" State">
+          </div>
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">City</label>
+            <input type="text" class="form-control" formControlName="cCity" placeholder=" City">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">Pin Code/ Postal Code</label>
+            <input type="text" class="form-control" formControlName="cPinCode" placeholder=" Pin Code">
+          </div>
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">Office Number</label>
+            <input type="text" class="form-control" formControlName="cContact" placeholder=" Contact Number">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="">
+            <label class="control-label">Fax Number</label>
+            <input type="text" class="form-control" formControlName="cFax" placeholder=" Fax Number">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="control-label">Email</label>
+        <input type="text" class="form-control" formControlName="email" placeholder=" Email">
+      </div>
+      <div class="form-group">
+        <label class="control-label">Mobile Number</label>
+        <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" formControlName="contact"
+          placeholder=" Contact Number">
+      </div>
+      <div class="form-group">
+        <label class="control-label">Correlation Id</label>
+        <input type="text" class="form-control" formControlName="correlationId" placeholder="Correlation Id">
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Account Type</label>
+        <input type="text" class="form-control" formControlName="aType" placeholder="Account Type">
+      </div>
+      <div class="form-group">
+        <label class="control-label">Description</label>
+        <!-- <textarea class="form-control"></textarea> -->
+        <input type="text" class="form-control" formControlName="desc" placeholder=" Description">
+      </div>
+    </div>
+  </div>
+  <div class="row form-group">
+    <div class="col-md-12">
+      <fieldset class="fieldSet ">
+        <legend class="fieldSetLegend">
+          <label class="control-label">2-Step Verification</label>
+        </legend>
+
+        <div class="row">
+          <div class="col-md-12 appImageBox">
+            <h2>Download Google Authenticator app (Required for 2-step verification) </h2>
+            <div class="">
+              <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank">
+                <img src="assets/images/playstore.png" class="appImage" alt="">
+              </a>
+              <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" target="_blank">
+                <img src="assets/images/appstore.png" class="appImage" alt="">
+              </a>
+            </div>
+          </div>
+        </div>
+        <hr class="hrdiv">
+        <div class="row">
+          <div class="col-md-12">
+            <label *ngIf="!_is2faEnabled">Turn-on 2-Step Verification</label>
+            <label *ngIf="_is2faEnabled">Turn-off 2-Step Verification</label>
+            <label class="switch pull-right">
+              <input type="checkbox" (change)="requestTwoStepAuth($event)" [checked]="_is2faEnabled">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <!-- <hr *ngIf="_twoStepVerification"> -->
+        <!-- <hr *ngIf="true"> -->
+        
+        <div class="row" [hidden]="!_twoStepVerification">
+          <!-- <div class="row" [hidden]="!true"> -->
+              <hr class="hrdiv">
+          <div class="col-sm-4 col-md-3">
+            <div id="qr2fa"></div>
+          </div>
+          <div class="col-sm-8 col-md-9">
+            <div class="row form-group">
+              <div class="col-md-12">
+                <label>Your Secret Key</label>
+                <input type="text" class="form-control" value="{{_securityCode}}" disabled>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 ">
+                <div class=" alert alert-danger">
+                  <h4>Please scan QR code with
+                    <u> Google Authenticator App or use Secret Key (manually)</u> to activate 2FA authentication and then click
+                    Activate 2FA Authentication button to proceed .</h4>
+
+                  <p class="">Note: Once 2FA Authentication button clicked without scan QR code or remember secret key, user will not
+                    be able to access its account ! </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="row text-center">
+              <div>
+                <a role="button" class="visible-xs btn-xs btn-primary confirmBtn" (click)="twoFaEnable('ENABLE')">Activate 2FA Authentication</a>
+                <a role="button" class="hidden-xs btn btn-primary " (click)="twoFaEnable('ENABLE')">Activate 2FA Authentication</a>
+                <!-- <button class="btn btn-primary btn-block" (click)="twoFaEnable('ENABLE')">Activate 2FA Authentication</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <!-- <hr class="hrdiv"> -->
+  <!-- <hr style="margin-top: 5px;margin-bottom: 5px;border: 0;border-top: 2px solid #d8d0d0;"> -->
+  <div class="row text-center">
+    <a role="button" class="visible-xs btn-xs btn-primary updateBtn" (click)="onUpdate()">Update Account</a>
+    <a role="button" class="hidden-xs btn btn-primary " (click)="onUpdate()">Update Account</a>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h4 *ngIf="serverError" class="text-danger">{{serverErrMsg}}</h4>
+    </div>
+  </div>
+</form>
+
+<!-- <app-loader></app-loader> -->
+<div class="loaderBackground" *ngIf="loaderMain">
+  <div class="loader" *ngIf="loader">
+    <div class="text-center" style="height:100%;width:100%;padding-top:30px;">
+
+    </div>
+  </div>
+  <div *ngIf="loaderText">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="row">
+        <div class="col-12 text-center">
+          <!-- <h3 class="">Token has been successfully created</h3> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <a role="button" routerLink="/dashboard" class="btn btn-primary">OK</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pop up -->
+<!-- Modal pop up -->
+<!-- <button id="openModalButtonOne" [hidden]="true" data-toggle="modal" data-target="#myModalOne">Open Modal</button>
+<div class="modal fade" id="myModalOne" role="">
+  <div class="modal-dialog">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Account Configuration</h4>
+      </div>
+      <div class="modal-body">
+        <h4 class="noMargin">Your account has been updated successfully !</h4>
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-2 col-md-offset-5">
+          <a type="button" class="btn btn-block btn-primary" data-dismiss="modal" (click)="updateData()">OK</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+<!-- Modal pop up end-->
+<app-alert [message]="currentMessage"></app-alert>
